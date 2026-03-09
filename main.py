@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
-import openai
+from openai import OpenAI
 import os
 
 app = Flask(__name__)
@@ -11,7 +11,7 @@ INSTANCE_TOKEN = "7cc1851a27074212af6f990353419a00530a891c50b141749a"
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 GREEN_API_URL = f"https://7103.api.greenapi.com"
 
-openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Store conversation history per user
 conversations = {}
@@ -61,7 +61,7 @@ def get_gpt_response(user_id, user_message):
     if len(conversations[user_id]) > 21:
         conversations[user_id] = [conversations[user_id][0]] + conversations[user_id][-20:]
     
-    response = openai.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=conversations[user_id],
         max_tokens=500
